@@ -27,8 +27,8 @@ const httpAuthSignature = crypto
     .digest();
 // set port of app
 const port = 3000;
-// set /register endpoint to register client
-app.get("/register", (req, res) => {
+// Express Middleware for HTTP Basic Authentication
+app.use((req, res, next) => {
     // HTTP Basic Authentication
     if (!req.headers.authorization) {
         res.set("WWW-Authenticate", 'Basic realm="401"');
@@ -41,12 +41,16 @@ app.get("/register", (req, res) => {
         .update(reqHeaderAuthBuffer)
         .digest();
     /**
-        Use crypto.timingSafeEqual function to check equality
-        to prevent Timing attack
-     */
+              Use crypto.timingSafeEqual function to check equality
+              to prevent Timing attack
+           */
     if (!crypto.timingSafeEqual(httpAuthSignature, reqHeaderAuthSignature)) {
         return res.status(401).send("Authentication required.");
     }
+    next();
+});
+// set /register endpoint to register client
+app.get("/register", (req, res) => {
     // generate cryptographically secure token
     let token = crypto.randomBytes(64).toString("hex");
     res.setHeader("Content-Type", "application/json");
