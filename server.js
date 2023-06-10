@@ -61,6 +61,14 @@ app.use((req, res, next) => {
     }
     next();
 });
+// Express Middleware for parsing application/json
+app.use(express.json());
+// Express Middleware for parsing application/x-www-form-urlencoded
+app.use(
+    express.urlencoded({
+        extended: true,
+    })
+);
 // set /register endpoint to register client
 app.get("/register", (req, res) => {
     // generate cryptographically secure token
