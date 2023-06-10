@@ -9,7 +9,10 @@ const config = JSON.parse(configBuffer.toString());
 // get user and pass and convert each to base64
 const httpAuthUser = config["user"];
 const httpAuthPass = config["pass"];
+// get number of clients
 const numOfClients = config['clients'];
+// clients object to store client data
+const clients = {};
 // check if user and pass exist
 if (!httpAuthPass && !httpAuthUser) {
     console.log("No config file with user and pass in json format.");
