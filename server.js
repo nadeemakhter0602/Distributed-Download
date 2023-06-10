@@ -49,9 +49,9 @@ app.use((req, res, next) => {
         .update(reqHeaderAuthBuffer)
         .digest();
     /**
-                      Use crypto.timingSafeEqual function to check equality
-                      to prevent Timing attack
-                   */
+      Use crypto.timingSafeEqual function to check equality
+      to prevent Timing attack
+      */
     if (!crypto.timingSafeEqual(httpAuthSignature, reqHeaderAuthSignature)) {
         return res.status(401).send(
             JSON.stringify({
