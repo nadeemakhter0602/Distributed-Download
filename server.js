@@ -88,6 +88,28 @@ app.get("/register", (req, res) => {
         })
     );
 });
+// set /setfilesize endpoint to set size of file
+app.post("/setfilesize", (req, res) => {
+    if ("size" in clients) {
+        return res.send(
+            JSON.stringify({
+                error: "file size already set",
+            })
+        );
+    } else if (!("size" in req.body)) {
+        return res.send(
+            JSON.stringify({
+                error: "no size key found",
+            })
+        );
+    }
+    clients["size"] = req.body["size"];
+    res.end(
+        JSON.stringify({
+            success: "file size set successfully",
+        })
+    );
+});
 // start app listener
 app.listen(port, () => {
     console.log("Merge server listening on port", port);
