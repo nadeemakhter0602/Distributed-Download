@@ -10,7 +10,7 @@ const config = JSON.parse(configBuffer.toString());
 const httpAuthUser = config["user"];
 const httpAuthPass = config["pass"];
 // get number of clients
-const numOfClients = config['clients'];
+const numOfClients = config["clients"];
 // clients object to store client data
 const clients = {};
 // check if user and pass exist
@@ -45,9 +45,9 @@ app.use((req, res, next) => {
         .update(reqHeaderAuthBuffer)
         .digest();
     /**
-              Use crypto.timingSafeEqual function to check equality
-              to prevent Timing attack
-           */
+                    Use crypto.timingSafeEqual function to check equality
+                    to prevent Timing attack
+                 */
     if (!crypto.timingSafeEqual(httpAuthSignature, reqHeaderAuthSignature)) {
         return res.status(401).send("Authentication required.");
     }
@@ -66,7 +66,7 @@ app.get("/register", (req, res) => {
 });
 // start app listener
 app.listen(port, () => {
-    console.log('Merge server listening on port', port);
-    console.log('HTTP auth username :', httpAuthUser);
-    console.log('HTTP auth password :', httpAuthPass);
+    console.log("Merge server listening on port", port);
+    console.log("HTTP auth username :", httpAuthUser);
+    console.log("HTTP auth password :", httpAuthPass);
 });
