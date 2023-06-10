@@ -65,6 +65,14 @@ app.use((req, res, next) => {
 app.get("/register", (req, res) => {
     // generate cryptographically secure token
     let token = crypto.randomBytes(64).toString("hex");
+    if (Object.keys(clients).length === numOfClients) {
+        return res.send(
+            JSON.stringify({
+                error: "all clients already registered",
+            })
+        );
+    }
+    clients[token] = {};
     res.setHeader("Content-Type", "application/json");
     res.end(
         JSON.stringify({
