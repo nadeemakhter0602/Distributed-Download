@@ -36,7 +36,11 @@ app.use((req, res, next) => {
     // HTTP Basic Authentication
     if (!req.headers.authorization) {
         res.set("WWW-Authenticate", 'Basic realm="401"');
-        return res.status(401).send("Authentication required.");
+        return res.status(401).send(
+            JSON.stringify({
+                error: "authentication required",
+            })
+        );
     }
     // generate signature of http auth token from headers
     const reqHeaderAuthBuffer = Buffer.from(req.headers.authorization);
@@ -45,11 +49,15 @@ app.use((req, res, next) => {
         .update(reqHeaderAuthBuffer)
         .digest();
     /**
-                    Use crypto.timingSafeEqual function to check equality
-                    to prevent Timing attack
-                 */
+                      Use crypto.timingSafeEqual function to check equality
+                      to prevent Timing attack
+                   */
     if (!crypto.timingSafeEqual(httpAuthSignature, reqHeaderAuthSignature)) {
-        return res.status(401).send("Authentication required.");
+        return res.status(401).send(
+            JSON.stringify({
+                error: "authentication required",
+            })
+        );
     }
     next();
 });
