@@ -62,7 +62,7 @@ app.get("/register", (req, res) => {
 });
 // start app listener
 app.listen(port, () => {
-    console.log(`Merge server listening on port 3000`);
-    console.log(`HTTP Auth User :`, httpAuthUser);
-    console.log(`HTTP Auth Pass :`, httpAuthPass);
+    console.log('Merge server listening on port', port);
+    console.log('HTTP auth username :', httpAuthUser);
+    console.log('HTTP auth password :', httpAuthPass);
 });
