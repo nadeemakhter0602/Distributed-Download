@@ -106,6 +106,7 @@ app.post("/setfileinfo", (req, res) => {
     }
     clients["size"] = Number(req.body["size"]);
     clients["fname"] = req.body["fname"];
+    // calculate and assign ranges for each client
     const interval = Math.ceil(clients["size"] / numOfClients);
     let offset = 0;
     for (const token in clients) {
