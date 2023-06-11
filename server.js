@@ -106,6 +106,13 @@ app.post("/setfileinfo", (req, res) => {
     }
     clients["size"] = Number(req.body["size"]);
     clients["fname"] = req.body["fname"];
+    const interval = Math.ceil(clients["size"] / numOfClients);
+    let offset = 0;
+    for (const token in clients) {
+        clients[token]["start"] = offset;
+        offset += interval;
+        clients[token]["end"] = Math.max(offset, clients["size"]);
+    }
     res.end(
         JSON.stringify({
             success: "file size and name set successfully",
