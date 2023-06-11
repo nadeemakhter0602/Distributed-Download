@@ -148,8 +148,8 @@ app.post("/getrange", (req, res) => {
     }
     res.end(
         JSON.stringify({
-            "start": clients[token]["start"],
-            "end": clients[token]["end"],
+            start: clients[token]["start"],
+            end: clients[token]["end"],
         })
     );
 });
@@ -171,11 +171,16 @@ app.post("/merge", (req, res) => {
             })
         );
     }
-    fs.writeFile(clients["fname"], data, position = pieceSize * index, (err) => {
-        if (err) {
-            console.error(err);
+    fs.writeFile(
+        clients["fname"],
+        data,
+        (position = pieceSize * index),
+        (err) => {
+            if (err) {
+                console.error(err);
+            }
         }
-    });
+    );
 });
 // start app listener
 app.listen(port, () => {
