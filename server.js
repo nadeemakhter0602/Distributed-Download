@@ -48,10 +48,7 @@ app.use((req, res, next) => {
         .createHmac("sha256", HMACSecret)
         .update(reqHeaderAuthBuffer)
         .digest();
-    /**
-      Use crypto.timingSafeEqual function to check equality
-      to prevent Timing attack
-      */
+    // use crypto.timingSafeEqual function to check equality
     if (!crypto.timingSafeEqual(httpAuthSignature, reqHeaderAuthSignature)) {
         return res.status(401).send(
             JSON.stringify({
@@ -81,7 +78,7 @@ app.get("/register", (req, res) => {
         );
     }
     clients[token] = {
-        'index': numOfClients--
+        index: numOfClients--,
     };
     res.setHeader("Content-Type", "application/json");
     res.end(
