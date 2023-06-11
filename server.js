@@ -90,25 +90,26 @@ app.get("/register", (req, res) => {
         })
     );
 });
-// set /setfilesize endpoint to set size of file
-app.post("/setfilesize", (req, res) => {
-    if ("size" in clients) {
+// set /setfileinfo endpoint to set size and name of file
+app.post("/setfileinfo", (req, res) => {
+    if ("size" in clients && "fname" in clients) {
         return res.send(
             JSON.stringify({
                 error: "file size already set",
             })
         );
-    } else if (!("size" in req.body)) {
+    } else if (!("size" in req.body) || !("fname" in req.body)) {
         return res.send(
             JSON.stringify({
-                error: "no size key found",
+                error: "no size or fname key found",
             })
         );
     }
     clients["size"] = req.body["size"];
+    clients["fname"] = req.body["fname"];
     res.end(
         JSON.stringify({
-            success: "file size set successfully",
+            success: "file size and name set successfully",
         })
     );
 });
