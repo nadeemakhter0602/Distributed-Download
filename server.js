@@ -119,6 +119,30 @@ app.post("/setfileinfo", (req, res) => {
         })
     );
 });
+// set endpoint to get range to download for each client
+app.post("/getrange", (req, res) => {
+    if (!("token" in req.body)) {
+        return res.send(
+            JSON.stringify({
+                error: "no token key found",
+            })
+        );
+    }
+    let token = req.body["token"];
+    if (!(token in clients)) {
+        return res.send(
+            JSON.stringify({
+                error: "invalid token",
+            })
+        );
+    }
+    res.end(
+        JSON.stringify({
+            "start": clients[token]["start"],
+            "end": clients[token]["end"],
+        })
+    );
+});
 // start app listener
 app.listen(port, () => {
     console.log("Merge server listening on port", port);
