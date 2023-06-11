@@ -171,6 +171,13 @@ app.post("/merge", (req, res) => {
             })
         );
     }
+    if (index < 0 || index >= piecesNum) {
+        return res.send(
+            JSON.stringify({
+                error: "index out of bounds",
+            })
+        );
+    }
     fs.writeFile(
         clients["fname"],
         data,
