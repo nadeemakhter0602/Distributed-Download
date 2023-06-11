@@ -104,7 +104,7 @@ app.post("/setfileinfo", (req, res) => {
             })
         );
     }
-    clients["size"] = req.body["size"];
+    clients["size"] = Number(req.body["size"]);
     clients["fname"] = req.body["fname"];
     res.end(
         JSON.stringify({
