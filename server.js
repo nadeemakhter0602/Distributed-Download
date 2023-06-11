@@ -13,6 +13,8 @@ const httpAuthPass = config["pass"];
 const numOfClients = config["clients"];
 // set client index to numOfClients
 let clientIndex = numOfClients;
+// set piece size for file
+const pieceSize = 2 ** 14;
 // clients object to store client data
 const clients = {};
 // check if user and pass exist
@@ -143,6 +145,30 @@ app.post("/getrange", (req, res) => {
             "end": clients[token]["end"],
         })
     );
+});
+// set endpoint for file upload and merge
+app.post("/merge", (req, res) => {
+    if (!("index" in req.body) || !("data" in req.body)) {
+        return res.send(
+            JSON.stringify({
+                error: "no index or data key found",
+            })
+        );
+    }
+    const index = Number(req.body["index"]);
+    const data = Buffer.from(req.body["index"]);
+    if (data.byteLength !== pieceSize) {
+        return res.send(
+            JSON.stringify({
+                error: "data not of appropriate size",
+            })
+        );
+    }
+    fs.writeFile(clients["fname"], data, position = pieceSize * index, (err) => {
+        if (err) {
+            console.error(err);
+        }
+    });
 });
 // start app listener
 app.listen(port, () => {
