@@ -15,6 +15,8 @@ const numOfClients = config["clients"];
 let clientIndex = numOfClients;
 // set piece size for file
 const pieceSize = 2 ** 14;
+// set number of pieces for file
+let piecesNum = 0;
 // clients object to store client data
 const clients = {};
 // check if user and pass exist
@@ -108,6 +110,11 @@ app.post("/setfileinfo", (req, res) => {
     }
     clients["size"] = Number(req.body["size"]);
     clients["fname"] = req.body["fname"];
+    // calculate and set number of pieces for file
+    piecesNum = Math.floor(clients["size"] / pieceSize);
+    if (clients["size"] % pieceSize !== 0) {
+        piecesNum += 1;
+    }
     // calculate and assign ranges for each client
     const interval = Math.ceil(clients["size"] / numOfClients);
     let offset = 0;
