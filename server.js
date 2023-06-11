@@ -10,7 +10,9 @@ const config = JSON.parse(configBuffer.toString());
 const httpAuthUser = config["user"];
 const httpAuthPass = config["pass"];
 // get number of clients
-let numOfClients = config["clients"];
+const numOfClients = config["clients"];
+// set client index to numOfClients
+let clientIndex = numOfClients;
 // clients object to store client data
 const clients = {};
 // check if user and pass exist
@@ -70,7 +72,7 @@ app.use(
 app.get("/register", (req, res) => {
     // generate cryptographically secure token
     let token = crypto.randomBytes(64).toString("hex");
-    if (numOfClients === 0) {
+    if (clientIndex === 0) {
         return res.send(
             JSON.stringify({
                 error: "all clients already registered",
@@ -78,7 +80,7 @@ app.get("/register", (req, res) => {
         );
     }
     clients[token] = {
-        index: numOfClients--,
+        index: clientIndex--,
     };
     res.setHeader("Content-Type", "application/json");
     res.end(
