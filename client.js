@@ -52,21 +52,21 @@ const registerURL = serverAddress + "/register";
 const setFileInfoURL = serverAddress + "/setfileinfo";
 const getRangeURL = serverAddress + "/getrange";
 const mergeURL = serverAddress + "/merge";
-const registerRequest = http.get(registerURL, (res) => {
-    const responseArray = [];
-    res.on("data", (chunk) => {
-        responseArray.push(chunk);
+const registerRequest = (registerURL) => {
+    return new Promise((resolve, reject) => {
+        const req = http.get(registerURL, (res) => {
+            const responseArray = [];
+            res.on("data", (chunk) => {
+                responseArray.push(chunk);
+            });
+            res.on("error", (err) => {
+                reject(err.message);
+            });
+            res.on("end", () => {
+                const response = JSON.parse(responseArray.join(""));
+                resolve(response);
+            });
+        });
+        req.end();
     });
-    res.on("error", (err) => {
-        console.log(err);
-    });
-    res.on("end", () => {
-        const response = JSON.parse(responseArray.join(""));
-        if ("token" in response) {
-            const token = response["token"];
-            console.log(token);
-        } else {
-            console.log(response);
-        }
-    });
-});
+};
