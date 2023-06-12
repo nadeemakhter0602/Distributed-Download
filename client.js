@@ -52,21 +52,51 @@ const registerURL = serverAddress + "/register";
 const setFileInfoURL = serverAddress + "/setfileinfo";
 const getRangeURL = serverAddress + "/getrange";
 const mergeURL = serverAddress + "/merge";
-const registerRequest = (registerURL) => {
+const responseCallback = (res, resolve, reject) => {
+    const responseArray = [];
+    res.on("data", (chunk) => {
+        responseArray.push(chunk);
+    });
+    res.on("error", (err) => {
+        reject(err.message);
+    });
+    res.on("end", () => {
+        const response = JSON.parse(responseArray.join(""));
+        resolve(response);
+    });
+};
+const registerRequest = () => {
     return new Promise((resolve, reject) => {
-        const req = http.get(registerURL, (res) => {
-            const responseArray = [];
-            res.on("data", (chunk) => {
-                responseArray.push(chunk);
-            });
-            res.on("error", (err) => {
-                reject(err.message);
-            });
-            res.on("end", () => {
-                const response = JSON.parse(responseArray.join(""));
-                resolve(response);
-            });
-        });
+        const req = http.get(registerURL, responseCallback(res, resolve, reject));
         req.end();
+    });
+};
+const setFileInfoRequest = (fname, size) => {
+    return new Promise((resolve, reject) => {
+        const payload = {
+            fname: fname,
+            size: size,
+        };
+        const req = http.request(
+            setFileInfoURL,
+            responseCallback(res, resolve, reject)
+        );
+        req.end(JSON.stringify(payload));
+    });
+};
+const getRangeRequest = () => {
+    return new Promise((resolve, reject) => {
+        const req = http.get(getRangeURL, responseCallback(res, resolve, reject));
+        req.end();
+    });
+};
+const mergeRequest = (index, data) => {
+    return new Promise((resolve, reject) => {
+        const payload = {
+            index: index,
+            data: data,
+        };
+        const req = http.request(mergeURL, responseCallback(res, resolve, reject));
+        req.end(JSON.stringify(payload));
     });
 };
