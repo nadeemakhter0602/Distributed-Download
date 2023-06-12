@@ -115,13 +115,13 @@ app.post("/setfileinfo", (req, res) => {
     if (clients["size"] % pieceSize !== 0) {
         piecesNum += 1;
     }
-    // calculate and assign ranges for each client
-    const interval = Math.ceil(clients["size"] / numOfClients);
+    // calculate and assign piece ranges for each client
+    const interval = Math.ceil(piecesNum / numOfClients);
     let offset = 0;
     for (const token in clients) {
         clients[token]["start"] = offset;
         offset += interval;
-        clients[token]["end"] = Math.max(offset, clients["size"]);
+        clients[token]["end"] = Math.min(offset, piecesNum);
     }
     res.end(
         JSON.stringify({
