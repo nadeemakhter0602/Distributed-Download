@@ -10,9 +10,14 @@ const options = {
         type: "string",
         short: "s",
     },
+    url: {
+        type: "string",
+        short: "u",
+    },
 };
 let localAddress;
 let serverAddress;
+let downloadURL;
 try {
     const {
         values,
@@ -23,6 +28,7 @@ try {
     });
     localAddress = options.interface;
     serverAddress = options.server;
+    downloadURL = options.url;
 } catch (error) {
     console.log(error.message);
 }
