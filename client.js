@@ -50,6 +50,7 @@ const registerURL = serverAddress + "/register";
 const setFileInfoURL = serverAddress + "/setfileinfo";
 const getRangeURL = serverAddress + "/getrange";
 const mergeURL = serverAddress + "/merge";
+const pieceSize = 2 ** 14;
 const request = (url, options, payload = {}) => {
     let httpModule = http;
     if (url.startsWith("https://")) {
@@ -134,4 +135,11 @@ const start = async () => {
         },
         getRangePayload
     );
+    const rangeData = JSON.parse(getRange["data"]);
+    if ("error" in rangeData) {
+        console.log(rangeData);
+        process.exit();
+    }
+    const pieceStart = rangeData["start"];
+    const pieceEnd = rangeData["end"];
 };
