@@ -66,7 +66,7 @@ const request = (url, options, payload = {}) => {
             });
             res.on("end", () => {
                 const response = {};
-                const responseData = JSON.parse(responseArray.join(""));
+                const responseData = responseArray.join("");
                 const responseHeaders = res.headers;
                 response["data"] = responseData;
                 response["headers"] = responseHeaders;
@@ -84,5 +84,39 @@ const start = async () => {
     const registerResponse = await request(registerURL, {
         method: "GET",
     });
-    const token = registerResponse;
+    const registerData = JSON.parse(registerResponse["data"]);
+    if (!("token" in responseData)) {
+        console.log(registerData);
+        process.exit();
+    }
+    const token = registerData["token"];
+    const checkRangeSupport = await request(downloadURL, {
+        method: "HEAD",
+    });
+    const checkHeaders = checkRangeSupport["headers"];
+    if (
+        !("Accept-Ranges" in checkHeaders) ||
+        checkHeaders["Accept-Ranges"] == "none"
+    ) {
+        console.log("Server does not support range requests");
+        process.exit();
+    }
+    if (!("Content-Length" in checkHeaders)) {
+        console.log("Cannot find file size");
+        process.exit();
+    }
+    // get file size from headers
+    const fSize = checkHeaders["Content-Length"];
+    // get file name from url
+    const fName = downloadURL.split("/").slice(-1)[0].split("?")[0];
+    const payload = {
+        fSize: fSize,
+        fName: fName,
+    };
+    const setFileInfo = await request(
+        setFileInfoURL, {
+            method: "POST",
+        },
+        payload
+    );
 };
