@@ -45,9 +45,6 @@ try {
 } catch (error) {
     console.log(error.message);
 }
-let httpOptions = {
-    localAddress: localAddress,
-};
 const registerURL = serverAddress + "/register";
 const setFileInfoURL = serverAddress + "/setfileinfo";
 const getRangeURL = serverAddress + "/getrange";
