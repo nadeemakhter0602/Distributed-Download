@@ -65,8 +65,12 @@ const request = (url, options, payload = {}) => {
                 reject(err.message);
             });
             res.on("end", () => {
-                const response = JSON.parse(responseArray.join(""));
-                resolve(response, res.headers);
+                const response = {};
+                const responseData = JSON.parse(responseArray.join(""));
+                const responseHeaders = res.headers;
+                response["data"] = responseData;
+                response["headers"] = responseHeaders;
+                resolve(response);
             });
         });
         if (Object.keys(payload).length > 0) {
@@ -75,4 +79,10 @@ const request = (url, options, payload = {}) => {
             req.end();
         }
     });
+};
+const start = async () => {
+    const registerResponse = await request(registerURL, {
+        method: "GET",
+    });
+    const token = registerResponse;
 };
