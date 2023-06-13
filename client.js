@@ -62,7 +62,7 @@ const responseCallback = (res, resolve, reject) => {
     });
     res.on("end", () => {
         const response = JSON.parse(responseArray.join(""));
-        resolve(response);
+        resolve(response, res.headers);
     });
 };
 const registerRequest = () => {
@@ -98,5 +98,16 @@ const mergeRequest = (index, data) => {
         };
         const req = http.request(mergeURL, responseCallback(res, resolve, reject));
         req.end(JSON.stringify(payload));
+    });
+};
+const checkPartialRequest = () => {
+    return new Promise((resolve, reject) => {
+        const req = http.request(
+            downloadURL, {
+                method: "HEAD",
+            },
+            responseCallback(res, resolve, reject)
+        );
+        req.end();
     });
 };
