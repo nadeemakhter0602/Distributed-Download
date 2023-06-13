@@ -44,6 +44,7 @@ try {
     downloadURL = values.url;
 } catch (error) {
     console.log(error.message);
+    process.exit();
 }
 const registerURL = serverAddress + "/register";
 const setFileInfoURL = serverAddress + "/setfileinfo";
