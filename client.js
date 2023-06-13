@@ -1,6 +1,7 @@
 const util = require("node:util");
 const http = require("http");
 const https = require("https");
+const fs = require("fs");
 const args = process.argv.slice(2);
 const options = {
     interface: {
@@ -51,10 +52,24 @@ const setFileInfoURL = serverAddress + "/setfileinfo";
 const getRangeURL = serverAddress + "/getrange";
 const mergeURL = serverAddress + "/merge";
 const pieceSize = 2 ** 14;
-const request = (url, options, payload = {}) => {
+const request = (url, options, payload = {}, writeStream = null) => {
     let httpModule = http;
     if (url.startsWith("https://")) {
         httpModule = https;
+    }
+    if (writeStream) {
+        return httpModule.request(url, options, (res) => {
+            response.pipe(file);
+            file.on("finish", () => {
+                file.close();
+                console.log("File download completed");
+            });
+            file.on("error", (err) => {
+                fs.unlink(writeStream.path);
+                console.log(err.message);
+                process.exit();
+            });
+        });
     }
     return new Promise((resolve, reject, httpModule) => {
         const req = httpModule.request(url, options, (res) => {
@@ -142,4 +157,18 @@ const start = async () => {
     }
     const pieceStart = rangeData["start"];
     const pieceEnd = rangeData["end"];
+    let piecesNum = Math.floor(fSize / pieceSize);
+    if (fSize % pieceSize !== 0) {
+        piecesNum += 1;
+    }
+    const startBytes = pieceStart * pieceSize;
+    const endBytes = Math.min(pieceEnd * pieceSize, fSize);
+    const file = fs.createWriteStream(fName);
+    const downloadFile = await request(
+        downloadURL, {
+            method: "GET",
+            localAddress: localAddress,
+        },
+        (writeStream = file)
+    );
 };
