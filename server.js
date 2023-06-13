@@ -95,24 +95,24 @@ app.get("/register", (req, res) => {
 });
 // set /setfileinfo endpoint to set size and name of file
 app.post("/setfileinfo", (req, res) => {
-    if ("size" in clients && "fname" in clients) {
+    if ("fSize" in clients && "fName" in clients) {
         return res.send(
             JSON.stringify({
                 error: "file size already set",
             })
         );
-    } else if (!("size" in req.body) || !("fname" in req.body)) {
+    } else if (!("fSize" in req.body) || !("fName" in req.body)) {
         return res.send(
             JSON.stringify({
-                error: "no size or fname key found",
+                error: "no size or fName key found",
             })
         );
     }
-    clients["size"] = Number(req.body["size"]);
-    clients["fname"] = req.body["fname"];
+    clients["fSize"] = Number(req.body["fSize"]);
+    clients["fName"] = req.body["fName"];
     // calculate and set number of pieces for file
-    piecesNum = Math.floor(clients["size"] / pieceSize);
-    if (clients["size"] % pieceSize !== 0) {
+    piecesNum = Math.floor(clients["fSize"] / pieceSize);
+    if (clients["fSize"] % pieceSize !== 0) {
         piecesNum += 1;
     }
     // calculate and assign piece ranges for each client
@@ -179,7 +179,7 @@ app.post("/merge", (req, res) => {
         );
     }
     fs.writeFile(
-        clients["fname"],
+        clients["fName"],
         data,
         (position = pieceSize * index),
         (err) => {
