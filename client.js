@@ -92,6 +92,7 @@ const start = async () => {
     const token = registerData["token"];
     const checkRangeSupport = await request(downloadURL, {
         method: "HEAD",
+        localAddress: localAddress,
     });
     const checkHeaders = checkRangeSupport["headers"];
     if (
@@ -109,14 +110,28 @@ const start = async () => {
     const fSize = checkHeaders["Content-Length"];
     // get file name from url
     const fName = downloadURL.split("/").slice(-1)[0].split("?")[0];
-    const payload = {
+    const fileInfoPayload = JSON.stringify({
         fSize: fSize,
         fName: fName,
-    };
+    });
     const setFileInfo = await request(
         setFileInfoURL, {
             method: "POST",
         },
-        payload
+        fileInfoPayload
+    );
+    const fileInfoData = JSON.parse(setFileInfo["data"]);
+    if (!("success" in fileInfoData)) {
+        console.log(fileInfoData);
+        process.exit();
+    }
+    const getRangePayload = JSON.stringify({
+        token: token,
+    });
+    const getRange = await request(
+        getRangeURL, {
+            method: "POST",
+        },
+        getRangePayload
     );
 };
