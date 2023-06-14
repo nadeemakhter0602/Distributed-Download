@@ -153,7 +153,7 @@ const start = async () => {
         process.exit();
     }
     // get file size from headers
-    const fSize = checkHeaders["Content-Length"];
+    const fSize = checkHeaders["content-length"];
     // get file name from url
     const fName = downloadURL.split("/").slice(-1)[0].split("?")[0];
     const fileInfoPayload = JSON.stringify({
@@ -163,6 +163,9 @@ const start = async () => {
     const setFileInfo = await request(
         setFileInfoURL, {
             method: "POST",
+            headers: {
+                "content-type": "application/json",
+            },
         },
         fileInfoPayload
     );
@@ -177,6 +180,9 @@ const start = async () => {
     const getRange = await request(
         getRangeURL, {
             method: "POST",
+            headers: {
+                "content-type": "application/json",
+            },
         },
         getRangePayload
     );
