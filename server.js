@@ -104,7 +104,7 @@ app.post("/setfileinfo", (req, res) => {
     } else if (!("fSize" in req.body) || !("fName" in req.body)) {
         return res.send(
             JSON.stringify({
-                error: "no size or fName key found",
+                error: "no fSize or fName key found",
             })
         );
     }
