@@ -86,7 +86,7 @@ const request = (
                 responseArray.push(chunk);
             });
             res.on("error", (err) => {
-                reject(err.message);
+                console.log(err.message);
             });
             res.on("end", () => {
                 const response = {};
@@ -94,7 +94,7 @@ const request = (
                 const responseHeaders = res.headers;
                 response["data"] = responseData;
                 response["headers"] = responseHeaders;
-                resolve(response);
+                console.log(response);
             });
         });
         if (Object.keys(payload).length > 0) {
