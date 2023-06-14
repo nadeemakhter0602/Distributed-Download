@@ -52,7 +52,13 @@ const setFileInfoURL = serverAddress + "/setfileinfo";
 const getRangeURL = serverAddress + "/getrange";
 const mergeURL = serverAddress + "/merge";
 const pieceSize = 2 ** 14;
-const request = (url, options, payload = {}, writeStream = null) => {
+const request = (
+    url,
+    options,
+    payload = {},
+    writeStream = null,
+    promise = true
+) => {
     let httpModule = http;
     if (url.startsWith("https://")) {
         httpModule = https;
@@ -70,6 +76,30 @@ const request = (url, options, payload = {}, writeStream = null) => {
                 process.exit();
             });
         });
+    }
+    if (!promise) {
+        const req = httpModule.request(url, options, (res) => {
+            const responseArray = [];
+            res.on("data", (chunk) => {
+                responseArray.push(chunk);
+            });
+            res.on("error", (err) => {
+                reject(err.message);
+            });
+            res.on("end", () => {
+                const response = {};
+                const responseData = responseArray.join("");
+                const responseHeaders = res.headers;
+                response["data"] = responseData;
+                response["headers"] = responseHeaders;
+                resolve(response);
+            });
+        });
+        if (Object.keys(payload).length > 0) {
+            req.end(payload);
+        } else {
+            req.end();
+        }
     }
     return new Promise((resolve, reject, httpModule) => {
         const req = httpModule.request(url, options, (res) => {
@@ -171,4 +201,30 @@ const start = async () => {
         },
         (writeStream = file)
     );
+    for (let idx = pieceStart; idx <= pieceEnd; idx++) {
+        fs.readFile(
+            fName + "." + token,
+            (position = pieceSize * index),
+            (length = pieceSize),
+            (err, data) => {
+                if (err) {
+                    console.error(err);
+                }
+                const data = data.toString("base64");
+                const idx = idx;
+                const jsonPayload = JSON.stringify({
+                    index: idx,
+                    data: data,
+                });
+                request(
+                    mergeURL, {
+                        method: "POST",
+                    },
+                    jsonPayload,
+                    null,
+                    false
+                );
+            }
+        );
+    }
 };
