@@ -101,7 +101,7 @@ const request = (
             req.end();
         }
     }
-    return new Promise((resolve, reject, httpModule) => {
+    return new Promise((resolve, reject) => {
         const req = httpModule.request(url, options, (res) => {
             const responseArray = [];
             res.on("data", (chunk) => {
@@ -131,7 +131,7 @@ const start = async () => {
         method: "GET",
     });
     const registerData = JSON.parse(registerResponse["data"]);
-    if (!("token" in responseData)) {
+    if (!("token" in registerData)) {
         console.log(registerData);
         process.exit();
     }
@@ -228,3 +228,4 @@ const start = async () => {
         );
     }
 };
+start();
