@@ -65,7 +65,7 @@ const request = (
     }
     if (writeStream) {
         return new Promise((resolve, reject) => {
-            httpModule.request(url, options, (res) => {
+            req = httpModule.request(url, options, (res) => {
                 res.pipe(writeStream);
                 writeStream.on("finish", () => {
                     file.close();
@@ -76,6 +76,7 @@ const request = (
                     reject(err.message);
                 });
             });
+            req.end();
         });
     }
     if (!promise) {
@@ -101,6 +102,7 @@ const request = (
         } else {
             req.end();
         }
+        return;
     }
     return new Promise((resolve, reject) => {
         const req = httpModule.request(url, options, (res) => {
@@ -205,6 +207,9 @@ const start = async () => {
         downloadURL, {
             method: "GET",
             localAddress: localAddress,
+            headers: {
+                range: "bytes=" + `${startBytes}-${endBytes}`,
+            },
         }, {},
         (writeStream = file)
     );
