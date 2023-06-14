@@ -210,11 +210,11 @@ const start = async () => {
                 if (err) {
                     console.error(err);
                 }
-                const data = data.toString("base64");
+                const fileData = data.toString("base64");
                 const idx = idx;
                 const jsonPayload = JSON.stringify({
                     index: idx,
-                    data: data,
+                    data: fileData,
                 });
                 request(
                     mergeURL, {
