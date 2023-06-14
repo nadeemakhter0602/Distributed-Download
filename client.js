@@ -163,7 +163,7 @@ const start = async () => {
     }
     const startBytes = pieceStart * pieceSize;
     const endBytes = Math.min(pieceEnd * pieceSize, fSize);
-    const file = fs.createWriteStream(fName);
+    const file = fs.createWriteStream(fName + "." + token);
     const downloadFile = await request(
         downloadURL, {
             method: "GET",
