@@ -142,13 +142,13 @@ const start = async () => {
     });
     const checkHeaders = checkRangeSupport["headers"];
     if (
-        !("Accept-Ranges" in checkHeaders) ||
+        !("accept-ranges" in checkHeaders) ||
         checkHeaders["Accept-Ranges"] == "none"
     ) {
         console.log("Server does not support range requests");
         process.exit();
     }
-    if (!("Content-Length" in checkHeaders)) {
+    if (!("content-length" in checkHeaders)) {
         console.log("Cannot find file size");
         process.exit();
     }
