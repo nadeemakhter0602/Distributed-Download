@@ -64,16 +64,17 @@ const request = (
         httpModule = https;
     }
     if (writeStream) {
-        return httpModule.request(url, options, (res) => {
-            response.pipe(file);
-            file.on("finish", () => {
-                file.close();
-                console.log("File download completed");
-            });
-            file.on("error", (err) => {
-                fs.unlink(writeStream.path);
-                console.log(err.message);
-                process.exit();
+        return new Promise((resolve, reject) => {
+            httpModule.request(url, options, (res) => {
+                res.pipe(writeStream);
+                writeStream.on("finish", () => {
+                    file.close();
+                    resolve("File download completed");
+                });
+                writeStream.on("error", (err) => {
+                    fs.unlink(writeStream.path);
+                    reject(err.message);
+                });
             });
         });
     }
@@ -204,9 +205,13 @@ const start = async () => {
         downloadURL, {
             method: "GET",
             localAddress: localAddress,
-        },
+        }, {},
         (writeStream = file)
     );
+    if (downloadFile !== "File download completed") {
+        console.log(downloadFile);
+        process.exit();
+    }
     for (let idx = pieceStart; idx <= pieceEnd; idx++) {
         fs.readFile(
             fName + "." + token,
