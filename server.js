@@ -163,7 +163,7 @@ app.post("/merge", (req, res) => {
         );
     }
     const index = Number(req.body["index"]);
-    const data = Buffer.from(req.body["index"]);
+    const data = Buffer.from(req.body["data"], "base64");
     if (data.byteLength !== pieceSize) {
         return res.send(
             JSON.stringify({
