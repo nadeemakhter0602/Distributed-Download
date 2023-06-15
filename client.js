@@ -236,7 +236,7 @@ const start = async () => {
                     if (err) {
                         console.error(err);
                     }
-                    const fileData = data.toString("base64");
+                    const fileData = data.subarray(0, bytesRead).toString("base64");
                     const jsonPayload = JSON.stringify({
                         index: idx,
                         data: fileData,
