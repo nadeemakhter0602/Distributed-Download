@@ -66,6 +66,11 @@ const request = (
     if (writeStream) {
         return new Promise((resolve, reject) => {
             req = httpModule.request(url, options, (res) => {
+                if (res.statusCode !== 416) {
+                    reject("Received 416 Requested Range Not Satisfiable");
+                } else if (res.statusCode !== 206) {
+                    reject("Received HTTP Status", res.statusCode);
+                }
                 res.pipe(writeStream);
                 writeStream.on("finish", () => {
                     writeStream.close();
@@ -137,6 +142,8 @@ const start = async () => {
     if (!("token" in registerData)) {
         console.log(registerData);
         process.exit();
+    } else {
+        console.log("Client successfully registered with token:", token);
     }
     const token = registerData["token"];
     const checkRangeSupport = await request(downloadURL, {
@@ -202,6 +209,7 @@ const start = async () => {
     const startBytes = pieceStart * pieceSize;
     const endBytes = Math.min(pieceEnd * pieceSize, fSize);
     const file = fs.createWriteStream(fName + "." + token);
+    console.log("Attempting to downloading file...");
     const downloadFile = await request(
         downloadURL, {
             method: "GET",
@@ -212,14 +220,14 @@ const start = async () => {
         }, {},
         (writeStream = file)
     );
+    console.log(downloadFile);
     if (downloadFile !== "File download completed") {
-        console.log(downloadFile);
         process.exit();
     }
     for (let idx = pieceStart; idx <= pieceEnd; idx++) {
         fs.readFile(
             fName + "." + token,
-            (position = pieceSize * index),
+            (position = pieceSize * idx),
             (length = pieceSize),
             (err, data) => {
                 if (err) {
