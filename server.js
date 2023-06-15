@@ -12,7 +12,7 @@ const httpAuthPass = config["pass"];
 // get number of clients
 const numOfClients = config["clients"];
 // set file descriptor
-const fileDescriptor = null;
+let fileDescriptor = null;
 // set client index to numOfClients
 let clientIndex = numOfClients;
 // set piece size for file
