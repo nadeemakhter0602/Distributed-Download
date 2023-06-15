@@ -68,7 +68,7 @@ const request = (
             req = httpModule.request(url, options, (res) => {
                 res.pipe(writeStream);
                 writeStream.on("finish", () => {
-                    file.close();
+                    writeStream.close();
                     resolve("File download completed");
                 });
                 writeStream.on("error", (err) => {
