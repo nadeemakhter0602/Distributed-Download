@@ -11,6 +11,8 @@ const httpAuthUser = config["user"];
 const httpAuthPass = config["pass"];
 // get number of clients
 const numOfClients = config["clients"];
+// set file descriptor
+const fileDescriptor = null;
 // set client index to numOfClients
 let clientIndex = numOfClients;
 // set piece size for file
@@ -110,6 +112,9 @@ app.post("/setfileinfo", (req, res) => {
     }
     clients["fSize"] = Number(req.body["fSize"]);
     clients["fName"] = req.body["fName"];
+    fs.open(clients["fName"], (err, fd) => {
+        fileDescriptor = fd;
+    });
     res.end(
         JSON.stringify({
             success: "file size and name set successfully",
@@ -181,16 +186,11 @@ app.post("/merge", (req, res) => {
             })
         );
     }
-    fs.writeFile(
-        clients["fName"],
-        data,
-        (position = pieceSize * index),
-        (err) => {
-            if (err) {
-                console.error(err);
-            }
+    fs.write(fileDescriptor, data, 0, data.length, pieceSize * index, (err) => {
+        if (err) {
+            console.error(err);
         }
-    );
+    });
 });
 // start app listener
 app.listen(port, () => {
