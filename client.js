@@ -85,7 +85,7 @@ const request = (
         });
     }
     if (!promise) {
-        const req = httpModule.request(url, options, (res) => {
+        return httpModule.request(url, options, (res) => {
             const responseArray = [];
             res.on("data", (chunk) => {
                 responseArray.push(chunk);
@@ -102,12 +102,6 @@ const request = (
                 console.log(response);
             });
         });
-        if (Object.keys(payload).length > 0) {
-            req.end(payload);
-        } else {
-            req.end();
-        }
-        return;
     }
     return new Promise((resolve) => {
         const req = httpModule.request(url, options, (res) => {
@@ -238,24 +232,27 @@ const start = async () => {
                 0,
                 (length = pieceSize),
                 (position = pieceSize * idx),
-                (err, data) => {
+                (err, bytesRead, data) => {
                     if (err) {
                         console.error(err);
                     }
                     const fileData = data.toString("base64");
-                    const idx = idx;
                     const jsonPayload = JSON.stringify({
                         index: idx,
                         data: fileData,
                     });
-                    request(
+                    const req = request(
                         mergeURL, {
                             method: "POST",
+                            headers: {
+                                "content-type": "application/json",
+                            },
                         },
                         jsonPayload,
                         null,
                         false
                     );
+                    req.end(jsonPayload);
                 }
             );
         }
