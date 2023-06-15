@@ -229,31 +229,36 @@ const start = async () => {
     if (downloadFile !== "File download completed") {
         process.exit();
     }
-    for (let idx = pieceStart; idx <= pieceEnd; idx++) {
-        fs.readFile(
-            fName + "." + token,
-            (position = pieceSize * idx),
-            (length = pieceSize),
-            (err, data) => {
-                if (err) {
-                    console.error(err);
+    fs.open(fName + "." + token, (err, fd) => {
+        for (let idx = pieceStart; idx <= pieceEnd; idx++) {
+            const pieceBytes = Buffer.alloc(pieceSize);
+            fs.read(
+                fd,
+                pieceBytes,
+                0,
+                (length = pieceSize),
+                (position = pieceSize * idx),
+                (err, data) => {
+                    if (err) {
+                        console.error(err);
+                    }
+                    const fileData = data.toString("base64");
+                    const idx = idx;
+                    const jsonPayload = JSON.stringify({
+                        index: idx,
+                        data: fileData,
+                    });
+                    request(
+                        mergeURL, {
+                            method: "POST",
+                        },
+                        jsonPayload,
+                        null,
+                        false
+                    );
                 }
-                const fileData = data.toString("base64");
-                const idx = idx;
-                const jsonPayload = JSON.stringify({
-                    index: idx,
-                    data: fileData,
-                });
-                request(
-                    mergeURL, {
-                        method: "POST",
-                    },
-                    jsonPayload,
-                    null,
-                    false
-                );
-            }
-        );
-    }
+            );
+        }
+    });
 };
 start();
