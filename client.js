@@ -66,7 +66,7 @@ const request = (
     if (writeStream) {
         return new Promise((resolve) => {
             req = httpModule.request(url, options, (res) => {
-                if (res.statusCode !== 416) {
+                if (res.statusCode === 416) {
                     resolve("Received 416 Requested Range Not Satisfiable");
                 } else if (res.statusCode !== 206) {
                     resolve("Received HTTP Status", res.statusCode);
