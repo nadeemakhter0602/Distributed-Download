@@ -175,7 +175,6 @@ const start = async () => {
     const fileInfoData = JSON.parse(setFileInfo["data"]);
     if (!("success" in fileInfoData)) {
         console.log(fileInfoData);
-        process.exit();
     }
     const getRangePayload = JSON.stringify({
         token: token,
