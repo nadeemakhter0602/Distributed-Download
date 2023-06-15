@@ -110,19 +110,6 @@ app.post("/setfileinfo", (req, res) => {
     }
     clients["fSize"] = Number(req.body["fSize"]);
     clients["fName"] = req.body["fName"];
-    // calculate and set number of pieces for file
-    piecesNum = Math.floor(clients["fSize"] / pieceSize);
-    if (clients["fSize"] % pieceSize !== 0) {
-        piecesNum += 1;
-    }
-    // calculate and assign piece ranges for each client
-    const interval = Math.ceil(piecesNum / numOfClients);
-    let offset = 0;
-    for (const token in clients) {
-        clients[token]["start"] = offset;
-        offset += interval;
-        clients[token]["end"] = Math.min(offset, piecesNum);
-    }
     res.end(
         JSON.stringify({
             success: "file size and name set successfully",
@@ -145,6 +132,22 @@ app.post("/getrange", (req, res) => {
                 error: "invalid token",
             })
         );
+    }
+    // calculate and set number of pieces for file
+    piecesNum = Math.floor(clients["fSize"] / pieceSize);
+    if (clients["fSize"] % pieceSize !== 0) {
+        piecesNum += 1;
+    }
+    // calculate and assign piece ranges for each client
+    const interval = Math.ceil((piecesNum - 1) / numOfClients);
+    let offset = 0;
+    for (const token in clients) {
+        if (token === "fSize" || token === "fName") {
+            continue;
+        }
+        clients[token]["start"] = offset;
+        offset += interval;
+        clients[token]["end"] = Math.min(offset, piecesNum);
     }
     res.end(
         JSON.stringify({
