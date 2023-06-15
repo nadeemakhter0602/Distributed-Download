@@ -64,12 +64,12 @@ const request = (
         httpModule = https;
     }
     if (writeStream) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             req = httpModule.request(url, options, (res) => {
                 if (res.statusCode !== 416) {
-                    reject("Received 416 Requested Range Not Satisfiable");
+                    resolve("Received 416 Requested Range Not Satisfiable");
                 } else if (res.statusCode !== 206) {
-                    reject("Received HTTP Status", res.statusCode);
+                    resolve("Received HTTP Status", res.statusCode);
                 }
                 res.pipe(writeStream);
                 writeStream.on("finish", () => {
@@ -78,7 +78,7 @@ const request = (
                 });
                 writeStream.on("error", (err) => {
                     fs.unlink(writeStream.path);
-                    reject(err.message);
+                    resolve(err.message);
                 });
             });
             req.end();
@@ -109,14 +109,14 @@ const request = (
         }
         return;
     }
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         const req = httpModule.request(url, options, (res) => {
             const responseArray = [];
             res.on("data", (chunk) => {
                 responseArray.push(chunk);
             });
             res.on("error", (err) => {
-                reject(err.message);
+                resolve(err.message);
             });
             res.on("end", () => {
                 const response = {};
@@ -142,10 +142,9 @@ const start = async () => {
     if (!("token" in registerData)) {
         console.log(registerData);
         process.exit();
-    } else {
-        console.log("Client successfully registered with token:", token);
     }
     const token = registerData["token"];
+    console.log("Client successfully registered with token:", token);
     const checkRangeSupport = await request(downloadURL, {
         method: "HEAD",
         localAddress: localAddress,
@@ -157,6 +156,8 @@ const start = async () => {
     ) {
         console.log("Server does not support range requests");
         process.exit();
+    } else {
+        console.log("Server supports range requests");
     }
     if (!("content-length" in checkHeaders)) {
         console.log("Cannot find file size");
@@ -166,6 +167,8 @@ const start = async () => {
     const fSize = checkHeaders["content-length"];
     // get file name from url
     const fName = downloadURL.split("/").slice(-1)[0].split("?")[0];
+    console.log("Size of file in bytes:", Number(fSize));
+    console.log("Name of file:", fName);
     const fileInfoPayload = JSON.stringify({
         fSize: fSize,
         fName: fName,
@@ -202,6 +205,8 @@ const start = async () => {
     }
     const pieceStart = rangeData["start"];
     const pieceEnd = rangeData["end"];
+    console.log("Starting piece", pieceStart);
+    console.log("Ending piece", pieceEnd);
     let piecesNum = Math.floor(fSize / pieceSize);
     if (fSize % pieceSize !== 0) {
         piecesNum += 1;
@@ -209,7 +214,7 @@ const start = async () => {
     const startBytes = pieceStart * pieceSize;
     const endBytes = Math.min(pieceEnd * pieceSize, fSize);
     const file = fs.createWriteStream(fName + "." + token);
-    console.log("Attempting to downloading file...");
+    console.log("Attempting to download file from", startBytes, "to", endBytes);
     const downloadFile = await request(
         downloadURL, {
             method: "GET",
