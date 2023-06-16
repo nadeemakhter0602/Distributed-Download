@@ -8,7 +8,7 @@ Clients use HTTP Range Requests to get parts of the file and then send it to the
 
 ## Running the merge server:
 
-A config.json needs to be created with the following keys:
+A `config.json` needs to be created with the following keys:
 
 * `user`: it contains the username for HTTP authentication
 * `pass`: it contains the password for HTTP authentication
