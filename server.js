@@ -155,30 +155,23 @@ app.post("/getrange", (req, res) => {
 });
 // set endpoint for file upload and merge
 app.post("/merge", (req, res) => {
-    if (!("index" in req.body) || !("data" in req.body)) {
+    if (!("offset" in req.body) || !("data" in req.body)) {
         return res.send(
             JSON.stringify({
-                error: "no index or data key found",
+                error: "no offset or data key found",
             })
         );
     }
-    const index = Number(req.body["index"]);
+    const offset = Number(req.body["offset"]);
     const data = Buffer.from(req.body["data"], "base64");
-    if (data.byteLength !== pieceSize) {
+    if (offset < 0 || offset >= clients["fSize"]) {
         return res.send(
             JSON.stringify({
-                error: "data not of appropriate size",
+                error: "offset out of bounds",
             })
         );
     }
-    if (index < 0 || index >= piecesNum) {
-        return res.send(
-            JSON.stringify({
-                error: "index out of bounds",
-            })
-        );
-    }
-    fs.write(fileDescriptor, data, 0, data.length, pieceSize * index, (err) => {
+    fs.write(fileDescriptor, data, 0, data.length, offset, (err) => {
         if (err) {
             console.error(err);
         }
