@@ -223,39 +223,37 @@ const start = async () => {
     if (downloadFile !== "File download completed") {
         process.exit();
     }
-    fs.open(fName + "." + token, (err, fd) => {
-        for (let idx = pieceStart; idx <= pieceEnd; idx++) {
-            const pieceBytes = Buffer.alloc(pieceSize);
-            fs.read(
-                fd,
-                pieceBytes,
-                0,
-                (length = pieceSize),
-                (position = pieceSize * idx),
-                (err, bytesRead, data) => {
-                    if (err) {
-                        console.error(err);
-                    }
-                    const fileData = data.subarray(0, bytesRead).toString("base64");
-                    const jsonPayload = JSON.stringify({
-                        index: idx,
-                        data: fileData,
-                    });
-                    const req = request(
-                        mergeURL, {
-                            method: "POST",
-                            headers: {
-                                "content-type": "application/json",
-                            },
-                        },
-                        jsonPayload,
-                        null,
-                        false
-                    );
-                    req.end(jsonPayload);
-                }
-            );
+    let fd = fs.openSync(fName + "." + token);
+    for (let idx = pieceStart; idx <= pieceEnd; idx++) {
+        const pieceBytes = Buffer.alloc(pieceSize);
+        const bytesRead = fs.readSync(
+            fd,
+            pieceBytes,
+            0,
+            (length = pieceSize),
+            (position = pieceSize * idx)
+        );
+        const fileData = pieceBytes.subarray(0, bytesRead).toString("base64");
+        const jsonPayload = JSON.stringify({
+            index: idx,
+            data: fileData,
+        });
+        const fileUpload = await request(
+            mergeURL, {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                },
+            },
+            jsonPayload
+        );
+        const fileUploadData = JSON.parse(fileUpload["data"]);
+        if ("success" in fileUploadData) {
+            console.log("Piece", idx, "uploaded successfully");
+        } else {
+            console.log("Piece", idx, "upload failed");
+            console.log(fileUploadData);
         }
-    });
+    }
 };
 start();
