@@ -136,13 +136,7 @@ app.post("/getrange", (req, res) => {
             })
         );
     }
-    // calculate and set number of pieces for file
-    piecesNum = Math.floor(clients["fSize"] / pieceSize);
-    if (clients["fSize"] % pieceSize !== 0) {
-        piecesNum += 1;
-    }
-    // calculate and assign piece ranges for each client
-    const interval = Math.ceil((piecesNum - 1) / numOfClients);
+    const interval = Math.floor(clients["fSize"] / numOfClients);
     let offset = 0;
     for (const token in clients) {
         if (token === "fSize" || token === "fName") {
@@ -150,7 +144,7 @@ app.post("/getrange", (req, res) => {
         }
         clients[token]["start"] = offset;
         offset += interval;
-        clients[token]["end"] = Math.min(offset, piecesNum);
+        clients[token]["end"] = Math.min(offset, clients["fSize"]);
     }
     res.end(
         JSON.stringify({
