@@ -197,16 +197,8 @@ const start = async () => {
         console.log(rangeData);
         process.exit();
     }
-    const pieceStart = rangeData["start"];
-    const pieceEnd = rangeData["end"];
-    console.log("Starting piece", pieceStart);
-    console.log("Ending piece", pieceEnd);
-    let piecesNum = Math.floor(fSize / pieceSize);
-    if (fSize % pieceSize !== 0) {
-        piecesNum += 1;
-    }
-    const startBytes = pieceStart * pieceSize;
-    const endBytes = Math.min(pieceEnd * pieceSize, fSize);
+    const startBytes = rangeData["start"];
+    const endBytes = rangeData["end"];
     const file = fs.createWriteStream(fName + "." + token);
     console.log("Attempting to download file from", startBytes, "to", endBytes);
     const downloadFile = await request(
@@ -224,18 +216,18 @@ const start = async () => {
         process.exit();
     }
     let fd = fs.openSync(fName + "." + token);
-    for (let idx = pieceStart; idx <= pieceEnd; idx++) {
+    for (let idx = startBytes; idx <= endBytes; idx = idx + pieceSize) {
         const pieceBytes = Buffer.alloc(pieceSize);
         const bytesRead = fs.readSync(
             fd,
             pieceBytes,
             0,
-            (length = pieceSize),
-            (position = pieceSize * idx)
+            pieceSize,
+            idx
         );
         const fileData = pieceBytes.subarray(0, bytesRead).toString("base64");
         const jsonPayload = JSON.stringify({
-            index: idx,
+            offset: idx,
             data: fileData,
         });
         const fileUpload = await request(
@@ -243,15 +235,16 @@ const start = async () => {
                 method: "POST",
                 headers: {
                     "content-type": "application/json",
+                    "connection": "Keep-Alive"
                 },
             },
             jsonPayload
         );
         const fileUploadData = JSON.parse(fileUpload["data"]);
         if ("success" in fileUploadData) {
-            console.log("Piece", idx, "uploaded successfully");
+            console.log("Bytes", idx, "to", idx + bytesRead, "uploaded successfully");
         } else {
-            console.log("Piece", idx, "upload failed");
+            console.log("Bytes", idx, "to", idx + bytesRead, "upload failed");
             console.log(fileUploadData);
         }
     }
