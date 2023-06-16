@@ -38,3 +38,5 @@ The client can be run simply with:
 ```
 
 The Local IP address of the interface used to download the file can be retrieved by running `ipconfig`. This allows us to have multiple clients in the same device using two different interfaces, e.g. An Ethernet connection and a seperate WiFi connection.
+
+Currently, the client sends downloaded data to the merge server in 16 KiB chunks.
