@@ -215,6 +215,7 @@ const start = async () => {
     if (downloadFile !== "File download completed") {
         process.exit();
     }
+    console.log("Uploading file to merge server from", startBytes, "to", endBytes);
     let fd = fs.openSync(fName + "." + token);
     for (let idx = startBytes; idx <= endBytes; idx = idx + pieceSize) {
         const pieceBytes = Buffer.alloc(pieceSize);
@@ -235,9 +236,7 @@ const start = async () => {
             jsonPayload
         );
         const fileUploadData = JSON.parse(fileUpload["data"]);
-        if ("success" in fileUploadData) {
-            console.log("Bytes", idx, "to", idx + bytesRead, "uploaded successfully");
-        } else {
+        if (!("success" in fileUploadData)) {
             console.log("Bytes", idx, "to", idx + bytesRead, "upload failed");
             console.log(fileUploadData);
         }
