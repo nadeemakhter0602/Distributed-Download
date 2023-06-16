@@ -11,6 +11,8 @@ const httpAuthUser = config["user"];
 const httpAuthPass = config["pass"];
 // get number of clients
 const numOfClients = config["clients"];
+// set bytes written to file
+let bytesWritten = 0;
 // set file descriptor
 let fileDescriptor = null;
 // set client index to numOfClients
@@ -151,6 +153,13 @@ app.post("/getrange", (req, res) => {
 });
 // set endpoint for file upload and merge
 app.post("/merge", (req, res) => {
+    if (bytesWritten === clients["fSize"]) {
+        return res.send(
+            JSON.stringify({
+                error: "entire file already received",
+            })
+        );
+    }
     if (!("offset" in req.body) || !("data" in req.body)) {
         return res.send(
             JSON.stringify({
@@ -167,11 +176,15 @@ app.post("/merge", (req, res) => {
             })
         );
     }
-    fs.write(fileDescriptor, data, 0, data.length, offset, (err) => {
-        if (err) {
-            console.error(err);
-        }
-    });
+    bytesWritten += fs.writeSync(fileDescriptor, data, 0, data.length, offset);
+    if (bytesWritten === clients["fSize"]) {
+        fs.closeSync(fileDescriptor);
+        return res.send(
+            JSON.stringify({
+                success: "entire file received",
+            })
+        );
+    }
     res.end(
         JSON.stringify({
             success: "piece recieved successfully",
