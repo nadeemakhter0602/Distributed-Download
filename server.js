@@ -136,7 +136,7 @@ app.post("/getrange", (req, res) => {
             })
         );
     }
-    const interval = Math.floor(clients["fSize"] / numOfClients);
+    const interval = Math.floor((clients["fSize"] - 1) / numOfClients);
     let offset = 0;
     for (const token in clients) {
         if (token === "fSize" || token === "fName") {
@@ -144,7 +144,7 @@ app.post("/getrange", (req, res) => {
         }
         clients[token]["start"] = offset;
         offset += interval;
-        clients[token]["end"] = Math.min(offset, clients["fSize"]);
+        clients[token]["end"] = Math.min(offset, clients["fSize"] - 1);
     }
     res.end(
         JSON.stringify({
