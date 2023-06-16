@@ -15,10 +15,6 @@ const numOfClients = config["clients"];
 let fileDescriptor = null;
 // set client index to numOfClients
 let clientIndex = numOfClients;
-// set piece size for file
-const pieceSize = 2 ** 14;
-// set number of pieces for file
-let piecesNum = 0;
 // clients object to store client data
 const clients = {};
 // check if user and pass exist
