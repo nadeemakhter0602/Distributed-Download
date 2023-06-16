@@ -112,9 +112,7 @@ app.post("/setfileinfo", (req, res) => {
     }
     clients["fSize"] = Number(req.body["fSize"]);
     clients["fName"] = req.body["fName"];
-    fs.open(clients["fName"], (err, fd) => {
-        fileDescriptor = fd;
-    });
+    fileDescriptor = fs.openSync(clients["fName"], "w");
     res.end(
         JSON.stringify({
             success: "file size and name set successfully",
@@ -191,6 +189,11 @@ app.post("/merge", (req, res) => {
             console.error(err);
         }
     });
+    res.end(
+        JSON.stringify({
+            success: "piece recieved successfully",
+        })
+    );
 });
 // start app listener
 app.listen(port, () => {
