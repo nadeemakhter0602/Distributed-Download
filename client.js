@@ -235,7 +235,7 @@ const start = async () => {
                 method: "POST",
                 headers: {
                     "content-type": "application/json",
-                    "connection": "Keep-Alive"
+                    "connection": "keep-alive"
                 },
             },
             jsonPayload
