@@ -241,6 +241,7 @@ const start = async () => {
             console.log(fileUploadData);
         }
     }
+    fs.closeSync(fd);
     console.log("File upload complete");
 };
 start();
