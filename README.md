@@ -44,7 +44,7 @@ Currently, the client sends downloaded data to the merge server in 16 KiB chunks
 
 ### Example
 
-Running 3 clients for downloading Arch Linux (IP address of the interface and merge server is removed):
+Running 3 clients for downloading Arch Linux (IP addresses of the interface and merge server is removed):
 
 ```
 ~$ node client.js -i XXX.XXX.XXX.XXX -u https://geo.mirror.pkgbuild.com/iso/2023.06.01/archlinux-x86_64.iso -s http://myuser:pass@XXX.XXX.XXX.XXX:3000
