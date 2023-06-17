@@ -219,7 +219,7 @@ const start = async () => {
     let fd = fs.openSync(fName + "." + token);
     for (let idx = startBytes; idx <= endBytes; idx = idx + pieceSize) {
         const pieceBytes = Buffer.alloc(pieceSize);
-        const bytesRead = fs.readSync(fd, pieceBytes, 0, pieceSize, idx);
+        const bytesRead = fs.readSync(fd, pieceBytes, 0, pieceSize, idx - startBytes);
         const fileData = pieceBytes.subarray(0, bytesRead).toString("base64");
         const jsonPayload = JSON.stringify({
             offset: idx,
