@@ -143,6 +143,7 @@ app.post("/getrange", (req, res) => {
         clients[token]["start"] = offset;
         offset += interval;
         clients[token]["end"] = Math.min(offset, clients["fSize"] - 1);
+        offset += 1;
     }
     res.end(
         JSON.stringify({
