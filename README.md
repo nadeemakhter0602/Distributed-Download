@@ -14,7 +14,13 @@ A `config.json` needs to be created with the following keys:
 * `pass`: containing the password for HTTP authentication
 * `clients`: containing the number of clients we want to assign partial downloads
 
-The server is written in express, so it is a dependency which needs to be installed. The server can be run simply with:
+The server is written in `express`, so it is a dependency which needs to be installed. We can install it with `npm`:
+
+```
+~$ npm install express
+```
+
+The server can be run simply with:
 
 ```
 ~$ node server.js
