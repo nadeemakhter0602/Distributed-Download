@@ -134,7 +134,7 @@ app.post("/getrange", (req, res) => {
             })
         );
     }
-    const interval = Math.floor(clients["fSize"] / numOfClients);
+    const interval = Math.ceil(clients["fSize"] / numOfClients);
     let offset = 0;
     for (const token in clients) {
         if (token === "fSize" || token === "fName") {
