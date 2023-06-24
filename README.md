@@ -4,7 +4,7 @@ A prototype for distributed downloading of files over http across multiple devic
 
 It consists of a server-client architecture where we have a single merge server and multiple clients.
 
-Clients use HTTP Range Requests to get parts of the file and then send it to the merge server where it is reassembled into a complete file.
+Clients use [HTTP Range Requests](https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests) to get parts of the file and then send it to the merge server where it is reassembled into a complete file.
 
 ## Running the merge server:
 
